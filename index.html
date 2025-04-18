@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FiveM - 风清市全RP</title>
+    <!-- 设置Favicon -->
+    <link rel="icon" type="image/png" href="https://pic1.imgdb.cn/item/68010ad188c538a9b5d7a0b5.png">
+    <style>
+        /* 基础样式 */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #1a1a1a; /* 默认夜间模式背景色 */
+            color: #ffffff; /* 默认夜间模式文字颜色 */
+            line-height: 1.6;
+            scroll-behavior: smooth; /* 平滑滚动 */
+            transition: background-color 0.3s ease, color 0.3s ease; /* 添加过渡效果 */
+        }
+
+        /* 白日模式样式 */
+        body.light-mode {
+            background-color: #f5f5f5; /* 白日模式背景色 */
+            color: #333; /* 白日模式文字颜色 */
+        }
+
+        /* 提示信息 */
+        .time-notification {
+            position: fixed;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #4caf50; /* 绿色背景 */
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            z-index: 1001;
+            font-size: 0.9rem;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+            display: none; /* 默认隐藏 */
+        }
+
+        /* 顶部标题和背景图 */
+        header {
+            background: linear-gradient(135deg, #0072ff, #00c6ff);
+            padding: 80px 20px;
+            text-align: center;
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+        header h1 {
+            font-size: 3.5rem;
+            margin: 0;
+            animation: fadeIn 2s ease-in-out;
+        }
+        header p {
+            font-size: 1.5rem;
+            margin: 10px 0 0;
+            animation: fadeIn 3s ease-in-out;
+        }
+        header::after {
+            content: '';
+            position: absolute;
+            bottom: -50px;
+            left: -10%;
+            width: 120%;
+            height: 100px;
+            background: rgba(255, 255, 255, 0.1);
+            transform: rotate(-3deg);
+        }
+
+        /* 模式切换按钮 */
+        .mode-toggle {
+            position: fixed;
+            top: 14px; /* 调整按钮位置，与导航栏底部对齐 */
+            left: 20px;
+            background: rgba(42, 42, 42, 0.9);
+            color: #ffffff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            z-index: 1000;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+        .mode-toggle:hover {
+            background-color: #00c6ff;
+            color: #ffffff;
+        }
+        .light-mode .mode-toggle {
+            background-color: #ffffff;
+            color: #333;
+            border: 1px solid #ccc;
+        }
+        .light-mode .mode-toggle:hover {
+            background-color: #00c6ff;
+            color: #ffffff;
+        }
+
+        /* 导航栏 */
+        nav {
+            position: fixed;
+            top: 0;
+            right: 0;
+            background: rgba(42, 42, 42, 0.9);
+            padding: 10px 20px;
+            border-bottom-left-radius: 10px;
+            z-index: 1000;
+        }
+        nav a {
+            color: #ffffff;
+            text-decoration: none;
+            margin: 0 10px;
+            font-size: 1rem;
+            transition: color 0.3s ease;
+        }
+        nav a:hover {
+            color: #00c6ff;
+        }
+
+        /* 主要内容区域 */
+        section {
+            padding: 60px 20px;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        h2 {
+            color: #00c6ff;
+            font-size: 2.5rem;
+            margin-bottom: 30px;
+            text-align: center;
+            position: relative;
+        }
+        h2::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 4px;
+            background: #00c6ff;
+            border-radius: 2px;
+        }
+
+        /* 功能列表 */
+        .features, .steps, .testimonials, .changelog, .blacklist {
+            background-color: #2a2a2a;
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+            transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease;
+        }
+        .light-mode .features, .light-mode .steps, .light-mode .testimonials, .light-mode .changelog, .light-mode .blacklist {
+            background-color: #ffffff;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+        }
+        .features:hover, .steps:hover, .testimonials:hover, .changelog:hover, .blacklist:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 25px rgba(0, 198, 255, 0.4);
+        }
+        .features ul, .steps ol, .changelog ul, .blacklist ul {
+            padding-left: 20px;
+        }
+        .features li, .steps li, .changelog li, .blacklist li {
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+        }
+
+        /* 下载按钮 */
+        .download-btn {
+            display: inline-block;
+            background: linear-gradient(135deg, #0072ff, #00c6ff);
+            color: white;
+            padding: 20px 40px;
+            font-size: 1.5rem;
+            text-decoration: none;
+            border-radius: 10px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            margin: 20px 0;
+        }
+        .download-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 8px 20px rgba(0, 198, 255, 0.6);
+        }
+
+        /* 版本信息 */
+        .version-info {
+            font-size: 1rem;
+            color: #888;
+            margin-left: 20px;
+            display: inline-block;
+            vertical-align: middle;
+        }
+        .light-mode .version-info {
+            color: #666;
+        }
+
+        /* 用户评价 */
+        .testimonials {
+            background-color: #333;
+            padding: 30px;
+            border-radius: 15px;
+        }
+        .light-mode .testimonials {
+            background-color: #f0f0f0;
+        }
+        .testimonial {
+            margin-bottom: 20px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            transition: transform 0.3s ease;
+        }
+        .light-mode .testimonial {
+            background: rgba(0, 0, 0, 0.05);
+        }
+        .testimonial:hover {
+            transform: translateY(-5px);
+        }
+        .testimonial p {
+            font-style: italic;
+            color: #ccc;
+            margin: 0;
+        }
+        .light-mode .testimonial p {
+            color: #666;
+        }
+        .testimonial strong {
+            color: #00c6ff;
+            display: block;
+            margin-top: 10px;
+        }
+
+        /* 页脚 */
+        footer {
+            background-color: #222;
+            padding: 40px 20px;
+            text-align: center;
+            color: #ccc;
+            margin-top: 60px;
+        }
+        .light-mode footer {
+            background-color: #e0e0e0;
+            color: #333;
+        }
+        footer a {
+            color: #00c6ff;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+        footer a:hover {
+            color: #0072ff;
+        }
+
+        /* 版权信息 */
+        .copyright {
+            font-size: 0.9rem;
+            color: #888;
+            margin-top: 20px;
+        }
+        .light-mode .copyright {
+            color: #666;
+        }
+
+        /* 动画 */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        /* 6号清单库特殊样式 */
+        .highlight {
+            color: #ffcc00;
+            font-weight: bold;
+            animation: float 3s ease-in-out infinite;
+        }
+    </style>
+</head>
+<body>
+    <!-- 提示信息 -->
+    <div class="time-notification" id="time-notification"></div>
+
+    <!-- 模式切换按钮 -->
+    <button class="mode-toggle" onclick="toggleMode()">切换到白日模式</button>
+
+    <!-- 导航栏 -->
+    <nav>
+        <a href="#introduction">介绍</a>
+        <a href="#tutorial">进服教程</a>
+        <a href="#changelog">更新日志</a>
+        <a href="#blacklist">运营组</a>
+        <a href="#download">加入服务器</a>
+        <a href="#testimonials">玩家评价</a>
+    </nav>
+
+    <!-- 顶部标题和背景图 -->
+    <header>
+        <h1>风清市-全RP-服务器</h1>
+        <p>您独一无二的故事篇章</p>
+    </header>
+
+    <!-- 介绍 -->
+    <section id="introduction">
+        <h2>服务器介绍</h2>
+        <div class="features">
+            <ul><strong>欢迎来到风清市全 RP！</strong></ul>
+            <ul>
+                <li>在这里，每一分钟都是鲜活的人生剧本，每一个选择都将书写独一无二的故事篇章。</li>
+                <li>我们致力于打造 24 小时不间断的沉浸式角色扮演世界，无论你是想在晨光熹微时扮演咖啡店主开启忙碌一天，还是在深夜化身街头巡警守护城市安宁，亦或是成为神秘帮派成员参与地下纷争，风清市的每个角落都等待着你的足迹。​</li>
+                <li>为保障更优质、和谐的游戏环境与角色扮演体验，我们特别设立女玩家认证机制。通过认证的女玩家将获得专属身份标识与丰富游戏福利，同时我们也为所有玩家营造友好、尊重的社交氛围，拒绝任何形式的不当行为，让每位女玩家都能在风清市安心演绎自己的精彩人生。​​</li>
+                <li>无论你是经验丰富的角色扮演达人，还是初次踏入虚拟世界的萌新，风清市全 RP 都有属于你的舞台。快来加入我们，在这个充满无限可能的城市，开启属于你的传奇之旅！</li>
+            </ul>
+        </div>
+    </section>
+
+    <!-- 教程 -->
+    <section id="tutorial">
+        <h2>入服方法</h2>
+        <div class="steps">
+            <ol>
+                <li><strong>加入服务器</strong>：<a href="https://servers.fivem.net/servers/detail/lgmllv" target="_blank" style="color: #00c6ff;">Fivem官网的服务器链接</a></li>
+                <li><strong>等待插件下载完成</strong>
+                <li><strong>下载完成后进服会有一个橙色的框，里面是识别码，记下识别码</strong>
+                <li><strong>前往 KOOK 的 🛂过白申请📋 频道过白名单 <strong class="highlight">格式：ID：XXX 识别码：RXXXX</strong> (ID就是你的游戏名)</strong>
+                </li>
+            </ol>
+        </div>
+    </section>
+
+    <!-- 更新日志 -->
+    <section id="changelog">
+        <h2>更新日志</h2>
+        <div class="changelog">
+            <ul>
+                <li><strong>2025年4月17日</strong></li>
+                服务器第二代重做完成，着手修复BUG，并开始<strong class="highlight">公测</strong>。<br>
+                <li><strong>2025年3月27日</strong></li>
+                服务器第二代开始制作。<br>
+                由技术员 <strong class="highlight">李斯</strong> 接手重做。
+                <li><strong>2025年3月7日</strong></li>
+                服务器第一代正式开服。<br>
+                由技术员 <strong class="highlight">小楠</strong> 运营和维护。
+            </ul>
+        </div>
+    </section>
+
+    <!-- 运营组 -->
+    <section id="blacklist">
+        <h2>风清市运营组</h2>
+        <div class="blacklist">
+            <ul>
+                <li>
+                    <strong>1. 苏羽</strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;身份：腐竹<br>
+                    服务器的最帅蓝战士，贱贱的，有事没事整点活，遇到问题甩技术。(●´∀｀●)
+                </li>
+                <li>
+                    <strong>2. 李斯</strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;身份：腐竹、技术、非法管理<br>
+                    服务器超级实力派，主要技术人员，合格的非法管理。
+                </li>
+                <li>
+                    <strong>3. 小楠</strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;身份：技术、合法管理<br>
+                    服务器订购兼实力派，少部分出力的技术，认真负责的合法管理。
+                </li>
+            </ul>
+        </div>
+    </section>
+
+    <!-- 加入服务器 -->
+    <section id="download">
+        <h2>立即加入</h2>
+        <p>点击下方按钮，加入我们的 KOOK 频道，开启您的游戏人生之旅！</p>
+        <a href="https://kook.vip/bSf5dd" class="download-btn">加入 KOOK 频道</a>
+        <span class="version-info">进 KOOK 后前往 🛂过白申请📋 频道过白名单</span>
+    </section>
+
+    <!-- 评价 -->
+    <section id="testimonials">
+        <h2>玩家评价</h2>
+        <div class="testimonials">
+            <div class="testimonial">
+                <p>“风清市 这个服真的超赞！全时段沉浸式体验，女玩家认证超贴心，福利多氛围好，来了就不想走！”</p>
+                <strong>—— 苏绾星</strong>
+            </div>
+            <div class="testimonial">
+                <p>“全时段都有超燃剧情，玩家互动超有爱，根本舍不得下线！”</p>
+                <strong>—— 浅梦悠</strong>
+            </div>
+            <div class="testimonial">
+                <p>“全时段沉浸感拉满，管理员处理违规超迅速，有问题秒响应，安心玩超省心！”</p>
+                <strong>—— 凛风</strong>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <p>如有任何问题或建议，欢迎通过以下方式联系我们：</p>
+        <p><strong>邮箱</strong>：<a href="mailto:2625772481@qq.com">2625772481@qq.com</a> | <strong>KOOK</strong>：<a href="https://kook.vip/srQKRS" target="_blank">运营组值班室</a></p>
+        <div class="copyright">
+            &copy; Copyright 2024-2025 Fivem-风清市全RP-服务器 (网页由xiaoqu520™提供技术支持)
+        </div>
+    </footer>
+
+    <script>
+        // 检测当前时间并切换模式
+        function checkTimeAndSetMode() {
+            const now = new Date();
+            const hours = now.getHours();
+            const notification = document.getElementById('time-notification');
+
+            // 白天模式：5:30 - 18:30
+            if (hours >= 5 && hours < 18) {
+                document.body.classList.add('light-mode');
+                notification.textContent = '检测到为白天，已自动更改网页配色~';
+            } else {
+                document.body.classList.remove('light-mode');
+                notification.textContent = '检测到为夜间，已自动更改网页配色~';
+            }
+
+            // 显示提示信息
+            notification.style.display = 'block';
+            setTimeout(() => {
+                notification.style.display = 'none';
+            }, 5000); // 5秒后隐藏提示
+        }
+
+        // 模式切换功能
+        function toggleMode() {
+            const body = document.body;
+            const modeToggle = document.querySelector('.mode-toggle');
+
+            if (body.classList.contains('light-mode')) {
+                body.classList.remove('light-mode');
+                modeToggle.textContent = '切换到白日模式';
+            } else {
+                body.classList.add('light-mode');
+                modeToggle.textContent = '切换到夜间模式';
+            }
+        }
+
+        // 页面加载时检测时间并设置模式
+        window.onload = checkTimeAndSetMode;
+    </script>
+</body>
+</html>
